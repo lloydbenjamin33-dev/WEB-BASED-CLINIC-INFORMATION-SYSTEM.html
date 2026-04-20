@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CarePoint — Clinic Information System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal-50: #E1F5EE;
+    --teal-100: #9FE1CB;
+    --teal-400: #1D9E75;
+    --teal-600: #0F6E56;
+    --teal-800: #085041;
+    --blue-50: #E6F1FB;
+    --blue-400: #378ADD;
+    --blue-600: #185FA5;
+    --amber-50: #FAEEDA;
+    --amber-400: #BA7517;
+    --coral-50: #FAECE7;
+    --coral-400: #D85A30;
+    --gray-50: #F1EFE8;
+    --gray-100: #D3D1C7;
+    --gray-400: #888780;
+    --gray-600: #5F5E5A;
+    --gray-800: #444441;
+    --green-50: #EAF3DE;
+    --green-400: #639922;
+    --green-600: #3B6D11;
+    --red-50: #FCEBEB;
+    --red-400: #E24B4A;
+    --bg: #f7f9f8;
+    --surface: #ffffff;
+    --border: #e2e8e6;
+    --text: #1a2622;
+    --muted: #5a6b66;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR */
+  .layout { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 240px;
+    background: var(--teal-600);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+  }
+
+  .sidebar-brand {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .brand-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: #fff;
+    letter-spacing: -0.3px;
+  }
+
+  .brand-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-top: 2px;
+  }
+
+  .sidebar-nav {
+    padding: 16px 0;
+    flex: 1;
+  }
+
+  .nav-section-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    color: rgba(255,255,255,0.45);
+    padding: 12px 24px 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 24px;
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 400;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+  }
+
+  .nav-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+  .nav-item.active {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    border-left-color: var(--teal-100);
+    font-weight: 500;
+  }
+
+  .nav-icon { width: 16px; height: 16px; opacity: 0.85; flex-shrink: 0; }
+
+  .sidebar-footer {
+    padding: 16px 24px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .user-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .user-avatar {
+    width: 32px; height: 32px;
+    background: var(--teal-100);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600;
+    color: var(--teal-800);
+  }
+
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 13px; color: #fff; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-role { font-size: 11px; color: rgba(255,255,255,0.5); }
+
+  /* MAIN */
+  .main {
+    margin-left: 240px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+  }
+
+  .topbar-title { font-size: 17px; font-weight: 500; }
+
+  .topbar-actions { display: flex; align-items: center; gap: 12px; }
+
+  .btn {
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+
+  .btn:hover { background: var(--gray-50); }
+
+  .btn-primary {
+    background: var(--teal-600);
+    color: #fff;
+    border-color: var(--teal-600);
+  }
+
+  .btn-primary:hover { background: var(--teal-800); border-color: var(--teal-800); }
+
+  .btn-danger {
+    background: var(--red-50);
+    color: var(--red-400);
+    border-color: var(--red-400);
+  }
+
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+  .content { padding: 28px 32px; flex: 1; }
+
+  /* VIEWS */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* STAT CARDS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+  .stat-value { font-size: 28px; font-weight: 600; line-height: 1; margin-bottom: 4px; }
+  .stat-sub { font-size: 12px; color: var(--muted); }
+  .stat-teal .stat-value { color: var(--teal-600); }
+  .stat-blue .stat-value { color: var(--blue-600); }
+  .stat-amber .stat-value { color: var(--amber-400); }
+  .stat-green .stat-value { color: var(--green-600); }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .card-title { font-size: 15px; font-weight: 500; }
+  .card-subtitle { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+  }
+
+  td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--gray-50); }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .badge-success { background: var(--green-50); color: var(--green-600); }
+  .badge-warning { background: var(--amber-50); color: var(--amber-400); }
+  .badge-info { background: var(--blue-50); color: var(--blue-600); }
+  .badge-danger { background: var(--red-50); color: var(--red-400); }
+  .badge-teal { background: var(--teal-50); color: var(--teal-600); }
+  .badge-gray { background: var(--gray-50); color: var(--gray-600); }
+
+  /* GRID 2-COL */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+  /* DOCTOR CARD */
+  .doctor-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .doctor-avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 600;
+  }
+
+  .doctor-info h3 { font-size: 15px; font-weight: 500; }
+  .doctor-info p { font-size: 13px; color: var(--muted); }
+
+  .availability-slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .slot {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    border: 1px solid var(--teal-100);
+    color: var(--teal-600);
+    background: var(--teal-50);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .slot:hover, .slot.selected {
+    background: var(--teal-600);
+    color: #fff;
+    border-color: var(--teal-600);
+  }
+
+  .slot.booked {
+    background: var(--gray-50);
+    color: var(--gray-400);
+    border-color: var(--gray-100);
+    cursor: not-allowed;
+    text-decoration: line-through;
+  }
+
+  /* FORM */
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--muted); }
+
+  .form-control {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    background: var(--surface);
+    color: var(--text);
+    transition: border 0.15s;
+    outline: none;
+  }
+
+  .form-control:focus { border-color: var(--teal-400); }
+  select.form-control { cursor: pointer; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 28px;
+    width: 480px;
+    max-width: 95vw;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  }
+
+  .modal-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
+  .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px; }
+
+  /* NOTIFICATION */
+  .notification {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--teal-600);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    z-index: 300;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  .notification.show { transform: translateY(0); opacity: 1; }
+
+  /* TIMELINE */
+  .timeline { list-style: none; }
+
+  .timeline-item {
+    display: flex;
+    gap: 14px;
+    padding: 0 0 20px;
+    position: relative;
+  }
+
+  .timeline-item:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 28px;
+    bottom: 0;
+    width: 1px;
+    background: var(--border);
+  }
+
+  .timeline-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 12px;
+  }
+
+  .timeline-body h4 { font-size: 14px; font-weight: 500; }
+  .timeline-body p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  /* SEARCH */
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-size: 14px;
+    color: var(--muted);
+    cursor: text;
+    min-width: 220px;
+  }
+
+  /* MESSAGES */
+  .message-list { list-style: none; }
+
+  .message-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+
+  .message-item:last-child { border-bottom: none; }
+  .message-item:hover { background: var(--gray-50); border-radius: var(--radius-sm); padding-left: 8px; }
+
+  .msg-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .msg-content { flex: 1; min-width: 0; }
+  .msg-sender { font-size: 14px; font-weight: 500; }
+  .msg-preview { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .msg-time { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+  .unread-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--teal-400);
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+
+  /* TABS */
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+
+  .tab {
+    padding: 10px 20px;
+    font-size: 14px;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+  }
+
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--teal-600); border-bottom-color: var(--teal-600); font-weight: 500; }
+
+  /* REPORT BARS */
+  .bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .bar-label { font-size: 13px; width: 100px; color: var(--muted); flex-shrink: 0; }
+  .bar-track { flex: 1; height: 8px; background: var(--gray-50); border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+  .bar-count { font-size: 13px; width: 36px; text-align: right; color: var(--text); font-weight: 500; }
+
+  /* RESPONSIVE TAG */
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .grid-2 { grid-template-columns: 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-name">CarePoint</div>
+      <div class="brand-sub">Clinic Information System</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <div class="nav-item active" data-view="dashboard" onclick="navigate('dashboard', this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item" data-view="appointments" onclick="navigate('appointments', this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M5 1v4M11 1v4M2 7h12"/></svg>
+        Appointments
+      </div>
+      <div class="nav-item" data-view="patients" onclick="navigate('patients', this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5 6a5 5 0 0 1 10 0H3z"/></svg>
+        Patients
+      </div>
+      <div class="nav-item" data-view="doctors" onclick="navigate('doctors', this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M3 13.5s.5-3.5 5-3.5 5 3.5 5 3.5"/><path d="M10 10.5v2m-1-1h2"/></svg>
+        Doctors
+      </div>
+      <div class="nav-section-label">Communication</div>
+      <div class="nav-item" data-view="messages" onclick="navigate('messages', this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H4l-3 2V4a1 1 0 0 1 1-1z"/></svg>
+        Messages
+        <span class="badge badge-teal" style="margin-left:auto;font-size:11px;padding:1px 7px;">3</span>
+      </div>
+      <div class="nav-section-label">Admin</div>
+      <div class="nav-item" data-view="reports" onclick="navigate('reports', this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 13V7M7 13V3M11 13v-5M15 13v-3" stroke-linecap="round"/></svg>
+        Reports
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-pill">
+        <div class="user-avatar">AD</div>
+        <div class="user-info">
+          <div class="user-name">Admin User</div>
+          <div class="user-role">Administrator</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Dashboard Overview</div>
+      <div class="topbar-actions">
+        <div class="search-bar">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="M13 13l-2.8-2.8"/></svg>
+          Search patients, doctors...
+        </div>
+        <button class="btn btn-primary" onclick="openModal('appointmentModal')">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3v10M3 8h10"/></svg>
+          New Appointment
+        </button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD VIEW -->
+      <div class="view active" id="view-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card stat-teal">
+            <div class="stat-label">Today's Appointments</div>
+            <div class="stat-value">14</div>
+            <div class="stat-sub">3 pending confirmation</div>
+          </div>
+          <div class="stat-card stat-blue">
+            <div class="stat-label">Registered Patients</div>
+            <div class="stat-value">248</div>
+            <div class="stat-sub">+6 this week</div>
+          </div>
+          <div class="stat-card stat-amber">
+            <div class="stat-label">Active Doctors</div>
+            <div class="stat-value">7</div>
+            <div class="stat-sub">5 available today</div>
+          </div>
+          <div class="stat-card stat-green">
+            <div class="stat-label">Messages</div>
+            <div class="stat-value">3</div>
+            <div class="stat-sub">Unread inquiries</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Today's Schedule</div>
+                <div class="card-subtitle">Thursday, 16 April 2026</div>
+              </div>
+              <button class="btn btn-sm" onclick="navigate('appointments', document.querySelector('[data-view=appointments]'))">View all</button>
+            </div>
+            <ul class="timeline">
+              <li class="timeline-item">
+                <div class="timeline-dot" style="background:var(--teal-50);color:var(--teal-600);">09</div>
+                <div class="timeline-body"><h4>Grace Otieno → Dr. Kimani</h4><p>09:00 AM · General Consultation · <span class="badge badge-success">Confirmed</span></p></div>
+              </li>
+              <li class="timeline-item">
+                <div class="timeline-dot" style="background:var(--amber-50);color:var(--amber-400);">10</div>
+                <div class="timeline-body"><h4>Daniel Mwangi → Dr. Achieng</h4><p>10:30 AM · Cardiology · <span class="badge badge-warning">Pending</span></p></div>
+              </li>
+              <li class="timeline-item">
+                <div class="timeline-dot" style="background:var(--blue-50);color:var(--blue-600);">12</div>
+                <div class="timeline-body"><h4>Amina Hassan → Dr. Oduya</h4><p>12:00 PM · Dermatology · <span class="badge badge-info">In Progress</span></p></div>
+              </li>
+              <li class="timeline-item">
+                <div class="timeline-dot" style="background:var(--teal-50);color:var(--teal-600);">14</div>
+                <div class="timeline-body"><h4>Peter Kamau → Dr. Kimani</h4><p>2:00 PM · Follow-up · <span class="badge badge-success">Confirmed</span></p></div>
+              </li>
+              <li class="timeline-item">
+                <div class="timeline-dot" style="background:var(--gray-50);color:var(--gray-600);">16</div>
+                <div class="timeline-body"><h4>Lucy Njeri → Dr. Achieng</h4><p>4:00 PM · Paediatrics · <span class="badge badge-gray">Upcoming</span></p></div>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="card" style="margin-bottom:16px;">
+              <div class="card-header"><div class="card-title">Recent Patients</div></div>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Name</th><th>Reg No.</th><th>Status</th></tr></thead>
+                  <tbody>
+                    <tr><td>Grace Otieno</td><td>PT-0248</td><td><span class="badge badge-success">Active</span></td></tr>
+                    <tr><td>Daniel Mwangi</td><td>PT-0247</td><td><span class="badge badge-success">Active</span></td></tr>
+                    <tr><td>Amina Hassan</td><td>PT-0246</td><td><span class="badge badge-warning">New</span></td></tr>
+                    <tr><td>Peter Kamau</td><td>PT-0245</td><td><span class="badge badge-success">Active</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header"><div class="card-title">Unread Messages</div></div>
+              <ul class="message-list">
+                <li class="message-item" onclick="navigate('messages', document.querySelector('[data-view=messages]'))">
+                  <div class="msg-avatar" style="background:var(--teal-50);color:var(--teal-600);">GO</div>
+                  <div class="msg-content">
+                    <div class="msg-sender">Grace Otieno</div>
+                    <div class="msg-preview">I need to reschedule my appointment for next...</div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;"><div class="msg-time">9:14 AM</div><div class="unread-dot"></div></div>
+                </li>
+                <li class="message-item" onclick="navigate('messages', document.querySelector('[data-view=messages]'))">
+                  <div class="msg-avatar" style="background:var(--blue-50);color:var(--blue-600);">DM</div>
+                  <div class="msg-content">
+                    <div class="msg-sender">Daniel Mwangi</div>
+                    <div class="msg-preview">Is Dr. Achieng available this Saturday?</div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;"><div class="msg-time">8:50 AM</div><div class="unread-dot"></div></div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- APPOINTMENTS VIEW -->
+      <div class="view" id="view-appointments">
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab(this,'tab-all')">All</div>
+          <div class="tab" onclick="switchTab(this,'tab-confirmed')">Confirmed</div>
+          <div class="tab" onclick="switchTab(this,'tab-pending')">Pending</div>
+          <div class="tab" onclick="switchTab(this,'tab-cancelled')">Cancelled</div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Appointment Records</div><div class="card-subtitle">22 total this month</div></div>
+            <button class="btn btn-primary btn-sm" onclick="openModal('appointmentModal')">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3v10M3 8h10"/></svg>
+              New
+            </button>
+          </div>
+          <div class="table-wrap">
+            <table id="appointments-table">
+              <thead>
+                <tr>
+                  <th>Appt ID</th><th>Patient</th><th>Doctor</th><th>Date & Time</th><th>Type</th><th>Status</th><th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="appt-tbody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PATIENTS VIEW -->
+      <div class="view" id="view-patients">
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Patient Registry</div><div class="card-subtitle">248 registered patients</div></div>
+            <button class="btn btn-primary btn-sm" onclick="openModal('patientModal')">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3v10M3 8h10"/></svg>
+              Register Patient
+            </button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Patient ID</th><th>Name</th><th>Contact</th><th>Medical History</th><th>Appointments</th><th>Status</th></tr>
+              </thead>
+              <tbody id="patients-tbody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOCTORS VIEW -->
+      <div class="view" id="view-doctors">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <div></div>
+          <button class="btn btn-primary btn-sm" onclick="openModal('doctorModal')">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3v10M3 8h10"/></svg>
+            Add Doctor
+          </button>
+        </div>
+        <div class="grid-3" id="doctors-grid">
+        </div>
+      </div>
+
+      <!-- MESSAGES VIEW -->
+      <div class="view" id="view-messages">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Inbox</div></div>
+            <ul class="message-list" id="inbox-list">
+            </ul>
+          </div>
+          <div class="card">
+            <div id="msg-detail" style="min-height:200px;">
+              <div style="color:var(--muted);font-size:14px;padding:40px 0;text-align:center;">Select a message to read</div>
+            </div>
+            <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:16px;">
+              <textarea class="form-control" rows="3" placeholder="Type a reply..." id="reply-box"></textarea>
+              <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="sendReply()">Send Reply</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORTS VIEW -->
+      <div class="view" id="view-reports">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Appointments by Specialty</div></div>
+            <div id="specialty-bars"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Appointment Status Summary</div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+              <div style="background:var(--green-50);border-radius:var(--radius-sm);padding:16px;text-align:center;">
+                <div style="font-size:28px;font-weight:600;color:var(--green-600);">68%</div>
+                <div style="font-size:12px;color:var(--green-600);margin-top:4px;">Confirmed</div>
+              </div>
+              <div style="background:var(--amber-50);border-radius:var(--radius-sm);padding:16px;text-align:center;">
+                <div style="font-size:28px;font-weight:600;color:var(--amber-400);">18%</div>
+                <div style="font-size:12px;color:var(--amber-400);margin-top:4px;">Pending</div>
+              </div>
+              <div style="background:var(--blue-50);border-radius:var(--radius-sm);padding:16px;text-align:center;">
+                <div style="font-size:28px;font-weight:600;color:var(--blue-600);">9%</div>
+                <div style="font-size:12px;color:var(--blue-600);margin-top:4px;">In Progress</div>
+              </div>
+              <div style="background:var(--red-50);border-radius:var(--radius-sm);padding:16px;text-align:center;">
+                <div style="font-size:28px;font-weight:600;color:var(--red-400);">5%</div>
+                <div style="font-size:12px;color:var(--red-400);margin-top:4px;">Cancelled</div>
+              </div>
+            </div>
+            <div style="border-top:1px solid var(--border);padding-top:14px;">
+              <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">Monthly trend (last 6 months)</div>
+              <div style="display:flex;align-items:flex-end;gap:6px;height:80px;">
+                <div style="flex:1;background:var(--teal-100);border-radius:4px 4px 0 0;height:55%"></div>
+                <div style="flex:1;background:var(--teal-100);border-radius:4px 4px 0 0;height:70%"></div>
+                <div style="flex:1;background:var(--teal-100);border-radius:4px 4px 0 0;height:60%"></div>
+                <div style="flex:1;background:var(--teal-100);border-radius:4px 4px 0 0;height:85%"></div>
+                <div style="flex:1;background:var(--teal-400);border-radius:4px 4px 0 0;height:75%"></div>
+                <div style="flex:1;background:var(--teal-600);border-radius:4px 4px 0 0;height:100%"></div>
+              </div>
+              <div style="display:flex;gap:6px;margin-top:4px;">
+                <div style="flex:1;text-align:center;font-size:11px;color:var(--muted);">Nov</div>
+                <div style="flex:1;text-align:center;font-size:11px;color:var(--muted);">Dec</div>
+                <div style="flex:1;text-align:center;font-size:11px;color:var(--muted);">Jan</div>
+                <div style="flex:1;text-align:center;font-size:11px;color:var(--muted);">Feb</div>
+                <div style="flex:1;text-align:center;font-size:11px;color:var(--muted);">Mar</div>
+                <div style="flex:1;text-align:center;font-size:11px;color:var(--muted);">Apr</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- MODALS -->
+
+<!-- New Appointment Modal -->
+<div class="modal-overlay" id="appointmentModal">
+  <div class="modal">
+    <div class="modal-title">Book New Appointment</div>
+    <div class="form-group">
+      <label class="form-label">Patient</label>
+      <select class="form-control" id="appt-patient">
+        <option value="">Select patient...</option>
+        <option>Grace Otieno (PT-0248)</option>
+        <option>Daniel Mwangi (PT-0247)</option>
+        <option>Amina Hassan (PT-0246)</option>
+        <option>Peter Kamau (PT-0245)</option>
+        <option>Lucy Njeri (PT-0244)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Doctor</label>
+      <select class="form-control" id="appt-doctor">
+        <option value="">Select doctor...</option>
+        <option>Dr. James Kimani — General Practice</option>
+        <option>Dr. Susan Achieng — Cardiology</option>
+        <option>Dr. Kevin Oduya — Dermatology</option>
+        <option>Dr. Mary Wanjiku — Paediatrics</option>
+      </select>
+    </div>
+    <div class="grid-2" style="gap:12px;">
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-control" id="appt-date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Time</label>
+        <select class="form-control" id="appt-time">
+          <option>08:00 AM</option><option>09:00 AM</option><option>10:00 AM</option>
+          <option>11:00 AM</option><option>12:00 PM</option><option>02:00 PM</option>
+          <option>03:00 PM</option><option>04:00 PM</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Appointment Type</label>
+      <select class="form-control" id="appt-type">
+        <option>General Consultation</option>
+        <option>Follow-up</option>
+        <option>Emergency</option>
+        <option>Specialist Referral</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes (optional)</label>
+      <textarea class="form-control" rows="2" placeholder="Additional notes..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('appointmentModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="bookAppointment()">Book Appointment</button>
+    </div>
+  </div>
+</div>
+
+<!-- Register Patient Modal -->
+<div class="modal-overlay" id="patientModal">
+  <div class="modal">
+    <div class="modal-title">Register New Patient</div>
+    <div class="grid-2" style="gap:12px;">
+      <div class="form-group"><label class="form-label">First Name</label><input class="form-control" id="pt-fname" placeholder="First name"></div>
+      <div class="form-group"><label class="form-label">Last Name</label><input class="form-control" id="pt-lname" placeholder="Last name"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Phone Number</label><input class="form-control" id="pt-phone" placeholder="+254 7XX XXX XXX"></div>
+    <div class="form-group"><label class="form-label">Email Address</label><input class="form-control" id="pt-email" placeholder="email@example.com" type="email"></div>
+    <div class="form-group"><label class="form-label">Date of Birth</label><input class="form-control" type="date"></div>
+    <div class="form-group">
+      <label class="form-label">Medical History</label>
+      <textarea class="form-control" rows="2" placeholder="Any known conditions, allergies, or medical history..."></textarea>
+    </div>
+    <div class="form-group"><label class="form-label">Password</label><input class="form-control" type="password" placeholder="Set patient login password"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('patientModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="registerPatient()">Register Patient</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Doctor Modal -->
+<div class="modal-overlay" id="doctorModal">
+  <div class="modal">
+    <div class="modal-title">Add New Doctor</div>
+    <div class="grid-2" style="gap:12px;">
+      <div class="form-group"><label class="form-label">First Name</label><input class="form-control" id="dr-fname" placeholder="First name"></div>
+      <div class="form-group"><label class="form-label">Last Name</label><input class="form-control" id="dr-lname" placeholder="Last name"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Specialization</label>
+      <select class="form-control" id="dr-spec">
+        <option>General Practice</option><option>Cardiology</option><option>Dermatology</option>
+        <option>Paediatrics</option><option>Orthopaedics</option><option>Gynaecology</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Contact</label><input class="form-control" placeholder="Phone / Email"></div>
+    <div class="form-group">
+      <label class="form-label">Available Days</label>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="day-selector">
+        <span class="slot" onclick="toggleDay(this)">Mon</span>
+        <span class="slot" onclick="toggleDay(this)">Tue</span>
+        <span class="slot" onclick="toggleDay(this)">Wed</span>
+        <span class="slot" onclick="toggleDay(this)">Thu</span>
+        <span class="slot" onclick="toggleDay(this)">Fri</span>
+        <span class="slot" onclick="toggleDay(this)">Sat</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('doctorModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="addDoctor()">Add Doctor</button>
+    </div>
+  </div>
+</div>
+
+<!-- Notification Toast -->
+<div class="notification" id="toast"></div>
+
+<script>
+const COLORS = ['teal','blue','amber','coral'];
+
+const doctors = [
+  { id:'DR-001', name:'Dr. James Kimani', spec:'General Practice', appts:42, color:'teal', slots:['08:00','09:00','10:00','14:00','15:00'], days:'Mon–Fri', initials:'JK' },
+  { id:'DR-002', name:'Dr. Susan Achieng', spec:'Cardiology', appts:31, color:'blue', slots:['09:00','10:30','12:00','14:30'], days:'Mon, Wed, Fri', initials:'SA' },
+  { id:'DR-003', name:'Dr. Kevin Oduya', spec:'Dermatology', appts:27, color:'amber', slots:['08:30','10:00','11:00','15:00'], days:'Tue, Thu, Sat', initials:'KO' },
+  { id:'DR-004', name:'Dr. Mary Wanjiku', spec:'Paediatrics', appts:38, color:'coral', slots:['09:00','10:00','11:00','14:00','16:00'], days:'Mon–Fri', initials:'MW' },
+  { id:'DR-005', name:'Dr. Alan Njoroge', spec:'Orthopaedics', appts:19, color:'teal', slots:['10:00','11:30','14:00'], days:'Mon, Wed, Fri', initials:'AN' },
+  { id:'DR-006', name:'Dr. Fatuma Salim', spec:'Gynaecology', appts:24, color:'blue', slots:['09:30','11:00','14:00','15:30'], days:'Tue–Sat', initials:'FS' },
+];
+
+const patients = [
+  { id:'PT-0248', name:'Grace Otieno', phone:'+254 701 234 567', history:'Hypertension', appts:5, status:'Active' },
+  { id:'PT-0247', name:'Daniel Mwangi', phone:'+254 712 345 678', history:'Asthma', appts:3, status:'Active' },
+  { id:'PT-0246', name:'Amina Hassan', phone:'+254 723 456 789', history:'None', appts:1, status:'New' },
+  { id:'PT-0245', name:'Peter Kamau', phone:'+254 734 567 890', history:'Diabetes', appts:8, status:'Active' },
+  { id:'PT-0244', name:'Lucy Njeri', phone:'+254 745 678 901', history:'None', appts:2, status:'Active' },
+  { id:'PT-0243', name:'James Ouma', phone:'+254 756 789 012', history:'Heart Disease', appts:12, status:'Active' },
+];
+
+const appointments = [
+  { id:'APT-022', patient:'Grace Otieno', doctor:'Dr. Kimani', date:'16 Apr 2026', time:'09:00 AM', type:'Consultation', status:'Confirmed' },
+  { id:'APT-021', patient:'Daniel Mwangi', doctor:'Dr. Achieng', date:'16 Apr 2026', time:'10:30 AM', type:'Cardiology', status:'Pending' },
+  { id:'APT-020', patient:'Amina Hassan', doctor:'Dr. Oduya', date:'16 Apr 2026', time:'12:00 PM', type:'Dermatology', status:'In Progress' },
+  { id:'APT-019', patient:'Peter Kamau', doctor:'Dr. Kimani', date:'16 Apr 2026', time:'02:00 PM', type:'Follow-up', status:'Confirmed' },
+  { id:'APT-018', patient:'Lucy Njeri', doctor:'Dr. Wanjiku', date:'16 Apr 2026', time:'04:00 PM', type:'Paediatrics', status:'Upcoming' },
+  { id:'APT-017', patient:'James Ouma', doctor:'Dr. Njoroge', date:'15 Apr 2026', time:'11:00 AM', type:'Orthopaedics', status:'Confirmed' },
+  { id:'APT-016', patient:'Grace Otieno', doctor:'Dr. Salim', date:'14 Apr 2026', time:'09:30 AM', type:'Gynaecology', status:'Confirmed' },
+  { id:'APT-015', patient:'Daniel Mwangi', doctor:'Dr. Kimani', date:'12 Apr 2026', time:'10:00 AM', type:'Consultation', status:'Cancelled' },
+];
+
+const messages = [
+  { from:'Grace Otieno', initials:'GO', color:'teal', time:'9:14 AM', subject:'Appointment Reschedule Request', body:'Good morning. I would like to reschedule my appointment for next week if possible. Please let me know which dates Dr. Kimani is available. Thank you.', read:false },
+  { from:'Daniel Mwangi', initials:'DM', color:'blue', time:'8:50 AM', subject:'Doctor Availability Query', body:'Is Dr. Achieng available this Saturday for a follow-up consultation? I have test results I need to discuss urgently.', read:false },
+  { from:'Amina Hassan', initials:'AH', color:'amber', time:'Yesterday', subject:'Prescription Inquiry', body:'Hello, I wanted to check if my prescription refill is ready for collection at the pharmacy. Dr. Oduya issued it last week.', read:false },
+  { from:'Dr. James Kimani', initials:'JK', color:'coral', time:'Yesterday', subject:'Schedule Update', body:'Admin, please note I will not be available on Friday 18th due to a medical conference. Please reschedule any appointments accordingly.', read:true },
+  { from:'Peter Kamau', initials:'PK', color:'teal', time:'2 days ago', subject:'Test Results', body:'My blood glucose test results came back. Can someone review them before my appointment today?', read:true },
+];
+
+const specialty_data = [
+  { name:'General Practice', count:42 },
+  { name:'Paediatrics', count:38 },
+  { name:'Cardiology', count:31 },
+  { name:'Gynaecology', count:24 },
+  { name:'Dermatology', count:27 },
+  { name:'Orthopaedics', count:19 },
+];
+
+function statusBadge(s) {
+  const map = { 'Confirmed':'success','Pending':'warning','In Progress':'info','Cancelled':'danger','Upcoming':'gray','Active':'success','New':'warning' };
+  return `<span class="badge badge-${map[s]||'gray'}">${s}</span>`;
+}
+
+function renderAppointments() {
+  const tbody = document.getElementById('appt-tbody');
+  tbody.innerHTML = appointments.map(a => `
+    <tr>
+      <td style="font-size:12px;color:var(--muted);font-family:monospace">${a.id}</td>
+      <td style="font-weight:500">${a.patient}</td>
+      <td>${a.doctor}</td>
+      <td style="font-size:13px;">${a.date} · ${a.time}</td>
+      <td><span class="badge badge-teal">${a.type}</span></td>
+      <td>${statusBadge(a.status)}</td>
+      <td><button class="btn btn-sm" onclick="cancelAppt('${a.id}',this)" style="font-size:11px;color:var(--red-400);border-color:var(--red-400)">Cancel</button></td>
+    </tr>`).join('');
+}
+
+function renderPatients() {
+  document.getElementById('patients-tbody').innerHTML = patients.map(p => `
+    <tr>
+      <td style="font-size:12px;color:var(--muted);font-family:monospace">${p.id}</td>
+      <td style="font-weight:500">${p.name}</td>
+      <td style="font-size:13px;">${p.phone}</td>
+      <td style="font-size:13px;">${p.history||'None'}</td>
+      <td>${p.appts}</td>
+      <td>${statusBadge(p.status)}</td>
+    </tr>`).join('');
+}
+
+function renderDoctors() {
+  document.getElementById('doctors-grid').innerHTML = doctors.map(d => `
+    <div class="doctor-card">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="doctor-avatar" style="background:var(--${d.color}-50);color:var(--${d.color}-600)">${d.initials}</div>
+        <div class="doctor-info"><h3>${d.name}</h3><p>${d.spec}</p></div>
+      </div>
+      <div style="display:flex;gap:16px;font-size:13px;">
+        <div><span style="color:var(--muted)">Appts:</span> <strong>${d.appts}</strong></div>
+        <div><span style="color:var(--muted)">Days:</span> <strong style="font-size:12px">${d.days}</strong></div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">Available slots today</div>
+        <div class="availability-slots">
+          ${d.slots.map((s,i) => `<span class="slot ${i===1?'booked':''}" onclick="this.classList.toggle('selected')">${s}</span>`).join('')}
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <button class="btn btn-sm" style="flex:1" onclick="showToast('Message sent to ${d.name}')">Message</button>
+        <button class="btn btn-sm btn-primary" style="flex:1" onclick="openModal('appointmentModal')">Book</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderMessages() {
+  document.getElementById('inbox-list').innerHTML = messages.map((m,i) => `
+    <li class="message-item" onclick="showMessage(${i})">
+      <div class="msg-avatar" style="background:var(--${m.color}-50);color:var(--${m.color}-600)">${m.initials}</div>
+      <div class="msg-content">
+        <div class="msg-sender" style="font-weight:${m.read?400:500}">${m.from}</div>
+        <div class="msg-preview">${m.subject}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+        <div class="msg-time">${m.time}</div>
+        ${!m.read?'<div class="unread-dot"></div>':''}
+      </div>
+    </li>`).join('');
+}
+
+function showMessage(i) {
+  const m = messages[i];
+  m.read = true;
+  document.getElementById('msg-detail').innerHTML = `
+    <div style="margin-bottom:12px;">
+      <div style="font-size:16px;font-weight:500">${m.subject}</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:4px;">From: ${m.from} · ${m.time}</div>
+    </div>
+    <div style="font-size:14px;line-height:1.8;color:var(--text)">${m.body}</div>`;
+  renderMessages();
+}
+
+function renderReports() {
+  const max = Math.max(...specialty_data.map(s=>s.count));
+  document.getElementById('specialty-bars').innerHTML = specialty_data.sort((a,b)=>b.count-a.count).map(s => `
+    <div class="bar-row">
+      <div class="bar-label">${s.name}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(s.count/max*100)}%;background:var(--teal-400)"></div></div>
+      <div class="bar-count">${s.count}</div>
+    </div>`).join('');
+}
+
+function navigate(view, el) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  const titles = { dashboard:'Dashboard Overview', appointments:'Appointments', patients:'Patient Registry', doctors:'Doctors & Availability', messages:'Messages', reports:'Reports & Analytics' };
+  document.getElementById('topbar-title').textContent = titles[view];
+}
+
+function switchTab(el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); });
+});
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function bookAppointment() {
+  const patient = document.getElementById('appt-patient').value;
+  const doctor = document.getElementById('appt-doctor').value;
+  const date = document.getElementById('appt-date').value;
+  const time = document.getElementById('appt-time').value;
+  const type = document.getElementById('appt-type').value;
+  if (!patient || !doctor || !date) { showToast('Please fill all required fields'); return; }
+  const newId = 'APT-0' + (appointments.length + 23);
+  const parts = doctor.split(' — ');
+  appointments.unshift({ id:newId, patient:patient.split(' (')[0], doctor:parts[0], date:date, time:time, type:type, status:'Pending' });
+  renderAppointments();
+  closeModal('appointmentModal');
+  showToast('Appointment booked — confirmation sent to patient & doctor');
+}
+
+function registerPatient() {
+  const fn = document.getElementById('pt-fname').value;
+  const ln = document.getElementById('pt-lname').value;
+  const ph = document.getElementById('pt-phone').value;
+  if (!fn || !ln) { showToast('Please enter patient name'); return; }
+  const newId = 'PT-0' + (249 + patients.length);
+  patients.unshift({ id:newId, name:`${fn} ${ln}`, phone:ph||'—', history:'None', appts:0, status:'New' });
+  renderPatients();
+  closeModal('patientModal');
+  showToast(`Patient ${fn} ${ln} registered successfully`);
+}
+
+function addDoctor() {
+  const fn = document.getElementById('dr-fname').value;
+  const ln = document.getElementById('dr-lname').value;
+  const spec = document.getElementById('dr-spec').value;
+  if (!fn || !ln) { showToast('Please enter doctor name'); return; }
+  const selected = [...document.querySelectorAll('#day-selector .slot.selected')].map(s=>s.textContent);
+  const color = COLORS[doctors.length % COLORS.length];
+  doctors.push({ id:'DR-00'+(doctors.length+1), name:`Dr. ${fn} ${ln}`, spec, appts:0, color, slots:['09:00','10:30','14:00'], days:selected.join(', ')||'TBD', initials:`${fn[0]}${ln[0]}` });
+  renderDoctors();
+  closeModal('doctorModal');
+  showToast(`Dr. ${fn} ${ln} added to the system`);
+}
+
+function cancelAppt(id, btn) {
+  const a = appointments.find(x => x.id===id);
+  if (a) { a.status = 'Cancelled'; renderAppointments(); showToast(`Appointment ${id} cancelled`); }
+}
+
+function toggleDay(el) { el.classList.toggle('selected'); }
+
+function sendReply() {
+  const box = document.getElementById('reply-box');
+  if (!box.value.trim()) return;
+  box.value = '';
+  showToast('Reply sent successfully');
+}
+
+// init
+renderAppointments();
+renderPatients();
+renderDoctors();
+renderMessages();
+renderReports();
+
+// set today's date as default
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('appt-date').value = today;
+</script>
+</body>
+</html>
